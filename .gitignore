@@ -169,3 +169,65 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Mage specific
+mage_data/
+.mage-cache/
+.mage/
+metastore_db/
+
+# Data files
+*.csv
+*.parquet
+*.avro
+*.orc
+data/
+raw_data/
+processed_data/
+*.xlsx
+*.xls
+*.json
+!example_data/*.csv
+!example_data/*.json
+
+# Cloud and Infrastructure
+# GCP
+*.json
+!example_configs/*.json
+.gcloud/
+*-credentials.json
+*service-account*.json
+
+# AWS
+.aws/
+*.pem
+aws_credentials
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!example_configs/*.tfvars
+
+# IDE additions
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Secrets and Configs
+.env*
+config.yaml
+credentials/
+secrets/
+!example_configs/config.yaml
+
+# Logs and temp files
+logs/
+*.log
+tmp/
+temp/
+.DS_Store
+
+# Docker
+.docker/
+docker-compose.override.yml
