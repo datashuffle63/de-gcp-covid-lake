@@ -6,7 +6,7 @@ PYTHON_VERSION ?= 3.9
 
 # Mage AI specific settings
 MAGE_PORT = 6789
-MAGE_IMAGE = mageai/mageai
+MAGE_IMAGE = mageai-custom
 
 # Docker volumes for persistence
 MAGE_VOLUME = $(PROJECT_NAME)_mage_data
@@ -29,12 +29,14 @@ test:
 
 # Start Mage AI with project persistence
 mage:
+	docker build -t ${MAGE_IMAGE}:latest .
 	docker run -it \
 		-p $(MAGE_PORT):$(MAGE_PORT) \
 		-v $(PWD):/home/src \
 		-v $(MAGE_VOLUME):/root/.mage \
+		-v $(HOME)/.kaggle:/root/.kaggle \
 		-e GOOGLE_APPLICATION_CREDENTIALS=/home/src/credentials/gcp-credentials.json \
-		$(MAGE_IMAGE) \
+		$(MAGE_IMAGE):latest \
 		/app/run_app.sh mage start $(PROJECT_NAME)
 
 # Quick start with different project name
@@ -43,11 +45,20 @@ start-mage: mage
 
 # Stop any running Mage containers
 mage-stop:
-	docker ps -q --filter ancestor=$(MAGE_IMAGE) | xargs -r docker stop
+	docker ps -q --filter ancestor=$(MAGE_IMAGE):latest | xargs -r docker stop
 
 # Remove Mage containers and volume
 mage-clean:
-	docker ps -aq --filter ancestor=$(MAGE_IMAGE) | xargs -r docker rm
+# Stop any running mage containers first
+	docker ps -q --filter ancestor=$(MAGE_IMAGE) | xargs -r docker stop
+# Remove containers
+	docker ps -aq --filter ancestor=$(MAGE_IMAGE) | xargs -r docker rm -f
+# Stop any containers using the volume
+	docker ps -q --filter volume=$(MAGE_VOLUME) | xargs -r docker stop
+# Remove containers using the volume
+	docker ps -aq --filter volume=$(MAGE_VOLUME) | xargs -r docker rm -f
+# Now remove the volume
+	docker volume rm -f $(MAGE_VOLUME) || true	docker ps -aq --filter ancestor=$(MAGE_IMAGE) | xargs -r docker rm
 	docker volume rm -f $(MAGE_VOLUME)
 
 # Full restart of Mage
@@ -84,28 +95,3 @@ help:
 	@echo "  test         : Run tests"
 	@echo "  clean        : Clean Python artifacts"
 	@echo "  init         : Full environment setup"
-MAGE_PORT = 6789
-MAGE_IMAGE = mageai/mageai
-
-# Start Mage AI
-mage:
-	docker run -it \
-		-p $(MAGE_PORT):$(MAGE_PORT) \
-		-v $(PWD):/home/src \
-		$(MAGE_IMAGE) \
-		/app/run_app.sh mage start $(PROJECT_NAME)
-
-# Quick start with different project name
-# Usage: make start-mage PROJECT_NAME=your_project_name
-start-mage: mage
-
-# Stop any running Mage containers
-mage-stop:
-	docker ps -q --filter ancestor=$(MAGE_IMAGE) | xargs -r docker stop
-
-# Remove Mage containers
-mage-clean:
-	docker ps -aq --filter ancestor=$(MAGE_IMAGE) | xargs -r docker rm
-
-# Full restart
-mage-restart: mage-stop mage-clean mage

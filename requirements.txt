@@ -5,3 +5,4 @@ retry-requests
 numpy
 pandas
 kaggle
+google-cloud-storage
