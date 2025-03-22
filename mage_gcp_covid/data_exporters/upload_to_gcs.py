@@ -1,6 +1,8 @@
 from mage_ai.settings.repo import get_repo_path
 from mage_ai.io.config import ConfigFileLoader
 
+from typing import Any
+
 # gcs related
 from mage_ai.io.google_cloud_storage import GoogleCloudStorage
 from google.cloud import storage
@@ -19,7 +21,8 @@ def upload_many_blobs_with_transfer_manager(
         filenames: list, 
         file_prefix: str = "", 
         source_directory: str = "", 
-        workers: int = 8
+        workers: int = 8,
+        logger: Any = None
     ):
     """Upload every file in a list to a bucket, concurrently in a process pool.
 
@@ -60,7 +63,7 @@ def upload_many_blobs_with_transfer_manager(
     }
 
     # debug
-    print(f"project_name: {gcs_config['project_name']}")
+    logger.debug(f"project_name: {gcs_config['project_name']}")
 
     storage_client = Client(
         project=gcs_config["project_name"],
@@ -83,6 +86,7 @@ def upload_many_blobs_with_transfer_manager(
 
         if isinstance(result, Exception):
             print("Failed to upload {} due to exception: {}".format(name, result))
+            logger.error(Exception)
         else:
             print("Uploaded {} to {}.".format(name, bucket.name))
 
@@ -116,14 +120,15 @@ def get_gcp_sa_key_config(yaml_path: str, config_profile: str = "default") -> st
         raise
 
 
-# Configure service account with GCS scope
+# Get correct service account from io_config
 config_path: str = path.join(get_repo_path(), 'io_config.yaml')
 config_profile: str = 'dev'
 sa_path: str = get_gcp_sa_key_config(config_path, config_profile)
 
 # debug
-print(f"sa_path: {sa_path}")
+# print(f"sa_path: {sa_path}")
 
+# Configure service account with GCS scope
 credentials = service_account.Credentials.from_service_account_file(
     sa_path,
     scopes=['https://www.googleapis.com/auth/devstorage.full_control']
@@ -138,11 +143,11 @@ def export_data_to_google_cloud_storage(df: DataFrame, **kwargs) -> None:
 
     Docs: https://docs.mage.ai/design/data-loading#googlecloudstorage
     """
-    config_path = path.join(get_repo_path(), 'io_config.yaml')
-    config_profile = 'dev'
+    # set block logger
+    logger = kwargs.get("logger")
 
     bucket_name = 'covid-medallion-lake'
-    object_key = '01_bronze_landing/covid'
+    object_prefix = '01_bronze_landing/covid/'
     src_path_local = kwargs["dump_dir"]
 
     # upload relevant files to gcs (only raw)
@@ -155,7 +160,8 @@ def export_data_to_google_cloud_storage(df: DataFrame, **kwargs) -> None:
     upload_many_blobs_with_transfer_manager(
         bucket_name=bucket_name,
         filenames=file_list,
-        file_prefix=object_key,
+        file_prefix=object_prefix,
         source_directory=src_path_local,
-        workers=8
+        workers=8,
+        logger=logger
     )

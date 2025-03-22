@@ -10,7 +10,6 @@ if 'data_loader' not in globals():
 if 'test' not in globals():
     from mage_ai.data_preparation.decorators import test
 
-
 @data_loader
 def load_data(*args, **kwargs):
     """
@@ -19,13 +18,16 @@ def load_data(*args, **kwargs):
     Returns:
         Anything (e.g. data frame, dictionary, array, int, str, etc.)
     """
+    # set block logger
+    logger = kwargs.get("logger")
+
     # set Kaggle dataset path and download
     api = KaggleApi()
     api.authenticate()
 
     dataset_path: str = kwargs["dataset_ep"]
     dump_path: str = kwargs["dump_dir"]
-    print("Path to dataset files:", dataset_path)
+    logger.debug("Path to dataset files:", dataset_path)
 
     # download to local
     Path(dump_path).mkdir(parents=True, exist_ok=True)

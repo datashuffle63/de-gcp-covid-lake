@@ -1,0 +1,58 @@
+blocks:
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - clean_and_standardize_covid_raw
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: load_covid_raw
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_loader
+  upstream_blocks: []
+  uuid: load_covid_raw
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: clean_and_standardize_covid_raw
+  retry_config: null
+  status: updated
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - load_covid_raw
+  uuid: clean_and_standardize_covid_raw
+cache_block_output_in_memory: false
+callbacks: []
+concurrency_config: {}
+conditionals: []
+created_at: '2025-03-22 02:43:41.887394+00:00'
+data_integration: null
+description: Standardizes and cleans the schema of the covid data from the bronze
+  zone
+executor_config: {}
+executor_count: 1
+executor_type: null
+extensions: {}
+name: bronze_to_silver_standardize_covid_data
+notification_config: {}
+remote_variables_dir: null
+retry_config: {}
+run_pipeline_in_one_process: false
+settings:
+  triggers: null
+spark_config: {}
+tags: []
+type: python
+uuid: bronze_to_silver_standardize_covid_data
+variables_dir: /home/src/mage_data/mage_gcp_covid
+widgets: []
