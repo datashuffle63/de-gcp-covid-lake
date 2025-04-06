@@ -18,19 +18,36 @@ blocks:
 - all_upstream_blocks_executed: true
   color: null
   configuration: {}
-  downstream_blocks: []
+  downstream_blocks:
+  - upload_to_gcs_silver_covid
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
   name: clean_and_standardize_covid_raw
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: transformer
   upstream_blocks:
   - load_covid_raw
   uuid: clean_and_standardize_covid_raw
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: upload_to_gcs_silver_covid
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - clean_and_standardize_covid_raw
+  uuid: upload_to_gcs_silver_covid
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}

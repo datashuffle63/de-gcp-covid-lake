@@ -59,7 +59,7 @@ def transform(data, *args, **kwargs):
     logger.debug(f"Date Columns: {date_cols}")
 
     # process dataframe in chunks to optimize memory usage
-    chunk_size: int = 100
+    chunk_size: int = 500
     all_chunks: list = []
 
     total_rows: int = len(df)
@@ -156,10 +156,12 @@ def transform(data, *args, **kwargs):
 
 
 @test
-def test_output(output, *args) -> None:
+def test_output(output, *args, **kwargs) -> None:
     """
     Test the quality and structure of the Silver layer COVID data.
     """
+    logger = kwargs["logger"]
+
     # Basic data validation
     assert output is not None, 'The output is undefined'
     assert len(output) > 0, 'Transformed data has no rows'
@@ -174,7 +176,7 @@ def test_output(output, *args) -> None:
     # assert (output['confirmed_cases'] < 0).any() == False, 'There are negative case counts'
     negative_case_counts = (output['confirmed_cases'] < 0).sum()
     if negative_case_counts > 0:
-        logger.warning(f'There are {negative_case_counts} negative case counts in the output')
+       logger.warning(f'There are {negative_case_counts} negative case counts in the output')
     
     # Business validation
     min_date = output['date'].min()
