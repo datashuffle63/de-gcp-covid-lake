@@ -1,0 +1,83 @@
+blocks:
+- all_upstream_blocks_executed: true
+  color: null
+  configuration:
+    file_path: data_loaders/import_weather_data_daily.py
+    file_source:
+      path: data_loaders/import_weather_data_daily.py
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: import_weather_data_daily
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_loader
+  upstream_blocks:
+  - extract_coordinates
+  uuid: import_weather_data_daily
+- all_upstream_blocks_executed: true
+  color: null
+  configuration:
+    file_path: data_loaders/load_covid_data_for_weather.py
+    file_source:
+      path: data_loaders/load_covid_data_for_weather.py
+  downstream_blocks:
+  - extract_coordinates
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: load_covid_data_for_weather
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_loader
+  upstream_blocks: []
+  uuid: load_covid_data_for_weather
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - import_weather_data_daily
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: extract_coordinates
+  retry_config: null
+  status: executed
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - load_covid_data_for_weather
+  uuid: extract_coordinates
+cache_block_output_in_memory: false
+callbacks: []
+concurrency_config: {}
+conditionals: []
+created_at: '2025-04-12 01:28:01.751698+00:00'
+data_integration: null
+description: 'Ingest the following datasource systems:
+
+
+  - OpenMeteo weather API'
+executor_config: {}
+executor_count: 1
+executor_type: null
+extensions: {}
+name: ingest_weather_data_to_landing_zone
+notification_config: {}
+remote_variables_dir: null
+retry_config: {}
+run_pipeline_in_one_process: false
+settings:
+  triggers: null
+spark_config: {}
+tags: []
+type: python
+uuid: ingest_weather_data_to_landing_zone
+variables_dir: /home/src/mage_data/mage_gcp_covid
+widgets: []

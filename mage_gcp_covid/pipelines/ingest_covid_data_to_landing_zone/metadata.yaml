@@ -40,9 +40,7 @@ data_integration: null
 description: 'Ingests the following external data from the ff source systems:
 
 
-  - John Hopkins University Covid Dataset (Kaggle)
-
-  - OpenMeteo weather API'
+  - John Hopkins University Covid Dataset (Kaggle)'
 executor_config: {}
 executor_count: 1
 executor_type: null
